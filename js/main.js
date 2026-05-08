@@ -288,18 +288,17 @@ if (contactForm) {
 
     try {
       const formData = new FormData(contactForm);
-
-      // Log what we're sending (diagnostic)
-      const sentFields = {};
+      const jsonBody = {};
       for (const [k, v] of formData.entries()) {
-        sentFields[k] = typeof v === 'string' && v.length > 80 ? v.slice(0, 80) + '...' : v;
+        if (k === '_gotcha' && v) return;
+        if (k !== '_gotcha') jsonBody[k] = v;
       }
-      console.log('[form] submitting fields:', sentFields);
+      console.log('[form] submitting fields:', jsonBody);
 
       const response = await fetch(contactForm.action, {
         method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
+        body: JSON.stringify(jsonBody),
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
       });
 
       // Capture diagnostic info from Formspark
