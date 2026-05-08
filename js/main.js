@@ -265,3 +265,45 @@ gsap.utils.toArray('.section-divider').forEach(divider => {
 });
 
 // FAQ accordion is handled by inline script in index.html
+
+// ==========================================
+// CONTACT FORM SUBMISSION (Formspark + Turnstile)
+// ==========================================
+const contactForm = document.getElementById('contact-form');
+if (contactForm) {
+  const successEl = document.querySelector('.form__success');
+  const errorEl = document.querySelector('.form__error');
+  const submitBtn = contactForm.querySelector('button[type="submit"]');
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Hide any prior status messages
+    if (successEl) successEl.style.display = 'none';
+    if (errorEl) errorEl.style.display = 'none';
+
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(contactForm.action, {
+        method: 'POST',
+        body: new FormData(contactForm),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        contactForm.style.display = 'none';
+        if (successEl) successEl.style.display = 'block';
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch (err) {
+      if (errorEl) errorEl.style.display = 'block';
+      submitBtn.textContent = originalBtnText;
+      submitBtn.disabled = false;
+      if (window.turnstile) window.turnstile.reset();
+    }
+  });
+}

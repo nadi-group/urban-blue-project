@@ -10,6 +10,7 @@
   <meta name="description" content="Urban Blue Project is a development management firm. We integrate approvals, servicing strategy, and delivery method to make affordable missing-middle housing viable in Ontario and Michigan.">
   <link rel="icon" href="images/UrbanBlue_logo3_FAV.png" type="image/png">
   <link rel="stylesheet" href="css/styles.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -555,6 +556,10 @@
                   <label for="constraints">What are the constraints?</label>
                   <textarea id="constraints" name="constraints" placeholder="E.g., municipal wastewater, tight schedule, affordability targets, approvals complexity, site constraints..."></textarea>
                 </div>
+                <!-- Honeypot field — bots fill this, humans don't see it; Formspark drops submissions where this is filled -->
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+                <!-- Cloudflare Turnstile spam protection -->
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAADLivlZD4NcuMbDB"></div>
                 <button type="submit" class="form__submit">Send inquiry</button>
               </div>
             </form>
