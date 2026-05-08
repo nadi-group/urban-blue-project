@@ -293,50 +293,26 @@ if (contactForm) {
         if (k === '_gotcha' && v) return;
         if (k !== '_gotcha') jsonBody[k] = v;
       }
-      console.log('[form] submitting fields:', jsonBody);
-
       const response = await fetch(contactForm.action, {
         method: 'POST',
         body: JSON.stringify(jsonBody),
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
       });
 
-      // Capture diagnostic info from Formspark
-      const formsparkStatus = response.headers.get('formspark-status');
-      const responseBody = await response.text();
-      console.log('[form] HTTP status:', response.status);
-      console.log('[form] formspark-status:', formsparkStatus);
-      console.log('[form] response body:', responseBody);
-
-      // Formspark returns 200 even when silently filtering submissions.
-      // Treat anything other than formspark-status: "ok" or null/missing as a failure.
-      const realSuccess = response.ok && formsparkStatus !== 'empty' && formsparkStatus !== 'spam';
+      const realSuccess = response.ok;
 
       if (realSuccess) {
         contactForm.style.display = 'none';
         if (successEl) successEl.style.display = 'block';
       } else {
-        // Surface the actual reason in the error UI so we can diagnose
-        if (errorEl) {
-          const debugLine = document.createElement('p');
-          debugLine.style.cssText = 'margin-top:0.5rem;font-size:0.75rem;opacity:0.7;font-family:monospace;';
-          debugLine.textContent = `[debug] HTTP ${response.status} · formspark-status: ${formsparkStatus || '(none)'} · body: ${responseBody.slice(0, 200)}`;
-          // Remove any previous debug line before appending a fresh one
-          const oldDebug = errorEl.querySelector('[data-debug]');
-          if (oldDebug) oldDebug.remove();
-          debugLine.setAttribute('data-debug', 'true');
-          errorEl.querySelector('.form__message').appendChild(debugLine);
-          errorEl.style.display = 'block';
-        }
+        if (errorEl) errorEl.style.display = 'block';
         submitBtn.textContent = originalBtnText;
         submitBtn.disabled = false;
       }
     } catch (err) {
-      console.error('[form] fetch error:', err);
       if (errorEl) errorEl.style.display = 'block';
       submitBtn.textContent = originalBtnText;
       submitBtn.disabled = false;
-      if (window.turnstile) window.turnstile.reset();
     }
   });
 }
