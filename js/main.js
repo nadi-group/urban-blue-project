@@ -331,7 +331,6 @@ if (contactForm) {
         }
         submitBtn.textContent = originalBtnText;
         submitBtn.disabled = false;
-        if (window.turnstile) window.turnstile.reset();
       }
     } catch (err) {
       console.error('[form] fetch error:', err);
